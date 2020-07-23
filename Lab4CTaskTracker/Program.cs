@@ -22,9 +22,97 @@ namespace Lab4CTaskTracker
     {
         static void Main(string[] args)
         {
+            string message = "testing";
+            string color = "Red";
+            string color2 = "Blue";
+
             //            ConsoleTextTest();
-            WriteToFile();
+            //WriteToFile();
+            Console.WriteLine("Initial colors");
+            ConsoleForegroundColor(color);
+            ConsoleBackgroundColor(color2);
+            DefaultColorColor();
+            Console.WriteLine("More text");
+
+            Console.WriteLine(message);
         }
+
+        private static void DefaultColorColor()
+        {
+            ConsoleBackgroundColor("Black");
+            ConsoleForegroundColor("White");
+        } // Sets the console text color to Black background and white text
+        private static void ConsoleForegroundColor(string color)
+        {
+            if (color == "Black")
+                Console.ForegroundColor = ConsoleColor.Black;
+            if (color == "Blue")
+                Console.ForegroundColor = ConsoleColor.Blue;
+            if (color == "Cyan")
+                Console.ForegroundColor = ConsoleColor.Cyan;
+            if (color == "DarkGray")
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+            if (color == "DarkBlue")
+                Console.ForegroundColor = ConsoleColor.DarkBlue;
+            if (color == "DarkCyan")
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+            if (color == "DarkGreen")
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+            if (color == "DarkMagenta")
+                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            if (color == "DarkRed")
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+            if (color == "DarkYellow")
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+            if (color == "Green")
+                Console.ForegroundColor = ConsoleColor.Green;
+            if (color == "Gray")
+                Console.ForegroundColor = ConsoleColor.Gray;
+            if (color == "Magenta")
+                Console.ForegroundColor = ConsoleColor.Magenta;
+            if (color == "Red")
+                Console.ForegroundColor = ConsoleColor.Red;
+            if (color == "White")
+                Console.ForegroundColor = ConsoleColor.White;
+            if (color == "Yellow")
+                Console.ForegroundColor = ConsoleColor.Yellow;
+        } // Sets the foreground text color
+        private static void ConsoleBackgroundColor(string color)
+        {
+            if (color == "Black")
+                Console.BackgroundColor = ConsoleColor.Black;
+            if (color == "Blue")
+                Console.BackgroundColor = ConsoleColor.Blue;
+            if (color == "Cyan")
+                Console.BackgroundColor = ConsoleColor.Cyan;
+            if (color == "DarkGray")
+                Console.BackgroundColor = ConsoleColor.DarkGray;
+            if (color == "DarkBlue")
+                Console.BackgroundColor = ConsoleColor.DarkBlue;
+            if (color == "DarkCyan")
+                Console.BackgroundColor = ConsoleColor.DarkCyan;
+            if (color == "DarkGreen")
+                Console.BackgroundColor = ConsoleColor.DarkGreen;
+            if (color == "DarkMagenta")
+                Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            if (color == "DarkRed")
+                Console.BackgroundColor = ConsoleColor.DarkRed;
+            if (color == "DarkYellow")
+                Console.BackgroundColor = ConsoleColor.DarkYellow;
+            if (color == "Green")
+                Console.BackgroundColor = ConsoleColor.Green;
+            if (color == "Gray")
+                Console.BackgroundColor = ConsoleColor.Gray;
+            if (color == "Magenta")
+                Console.BackgroundColor = ConsoleColor.Magenta;
+            if (color == "Red")
+                Console.BackgroundColor = ConsoleColor.Red;
+            if (color == "White")
+                Console.BackgroundColor = ConsoleColor.White;
+            if (color == "Yellow")
+                Console.BackgroundColor = ConsoleColor.Yellow;
+        } // Sets the background text color
+
 
         private static void WriteToFile()
         {
