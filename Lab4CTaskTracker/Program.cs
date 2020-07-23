@@ -14,6 +14,7 @@ Things to do so far:
 
  * */
 using System;
+using System.IO;
 
 namespace Lab4CTaskTracker
 {
@@ -21,7 +22,47 @@ namespace Lab4CTaskTracker
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            //            ConsoleTextTest();
+            WriteToFile();
+        }
+
+        private static void WriteToFile()
+        {
+            try
+            {
+                //Pass the filepath and filename to the StreamWriter Constructor
+                StreamWriter sw = new StreamWriter("Test.txt");
+                //Write a line of text
+                sw.WriteLine("Hello World!!");
+                //Write a second line of text
+                sw.WriteLine("From the StreamWriter class");
+                //Close the file
+                sw.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            finally
+            {
+                Console.WriteLine("Executing finally block.");
+            }
+        }
+
+        private static void ConsoleTextTest()
+        {
+            // setting the window size 
+            Console.SetWindowSize(40, 40);
+
+            // setting buffer size of console 
+            Console.SetBufferSize(80, 80);
+
+            // using the method 
+            Console.SetCursorPosition(20, 20);
+            Console.WriteLine("Hello GFG!");
+            Console.Write("Press any key to continue . . . ");
+
+            Console.ReadKey(true);
         }
     }
 }
