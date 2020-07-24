@@ -39,10 +39,10 @@ namespace Lab4CTaskTracker
 
             public string SelectedOption => SelectedIndex != -1 ? Items[SelectedIndex] : null;
 
-
             public void MoveUp() => SelectedIndex = Math.Max(SelectedIndex - 1, 0);
 
-            public void MoveDown() => SelectedIndex = Math.Min(SelectedIndex + 1, Items.Count -1);
+            public void MoveDown() => SelectedIndex = Math.Min(SelectedIndex + 1, Items.Count - 1);
+
         }
 
 
@@ -72,7 +72,8 @@ namespace Lab4CTaskTracker
                         TextColor();
                     }
 
-//                    Console.ForegroundColor = color;
+                    //                    Console.ForegroundColor = color;
+                    Console.Write($"{i + 1}. ");
                     Console.WriteLine(menu.Items[i]);
                 }
             }
@@ -82,10 +83,28 @@ namespace Lab4CTaskTracker
         public static void Main(string[] args)
         {
             var menu = new Menu(new string[] { "John", "Bill", "Janusz", "Grażyna", "1500", ":)" });
+
+            string result = "";
+            int selection = 0;
+
+            (result, selection) = CallMenu(menu);
+
+            menu = new Menu(new string[] { "Luke", "Leia", "C3PO", "R2D2", "Darth Vader", "Yoda", "Boba Fett", "Chewbacca", "Old Ben Kenobi", "Red 5", "Han Solo", "The Emperor", "Admiral Ackbar", "Mace Windu", "The quick brown fox jumps over the lazy dog" });
+
+            (result, selection) = CallMenu(menu);
+
+            Console.WriteLine($"You selected {result}, it was item number {selection}");
+            Console.ReadKey();
+        }
+
+        private static (string, int) CallMenu(Menu menu)
+        {
+            Console.Clear();
             var menuPainter = new ConsoleMenuPainter(menu);
 
             bool done = false;
 
+            int selection = 0;
             do
             {
                 menuPainter.Paint(8, 5);
@@ -96,23 +115,26 @@ namespace Lab4CTaskTracker
                 {
                     case ConsoleKey.UpArrow:
                         menu.MoveUp();
+                        if (selection >= 2)
+                            selection--;
                         break;
                     case ConsoleKey.DownArrow:
                         menu.MoveDown();
+                        if (selection <= 14)
+                            selection++;
                         break;
                     case ConsoleKey.Enter:
                         done = true;
                         break;
                 }
 
-                TextColor(11,0);
+                TextColor(11, 0);
                 ClearCurrentConsoleLine();
-                Console.WriteLine("Selected option: " + (menu.SelectedOption ?? "(nothing)"));
+                Console.WriteLine($"Selected option #{selection}: " + (menu.SelectedOption ?? "(nothing)"));
             }
             while (!done);
-            Console.ReadKey();
+            return (menu.SelectedOption, selection);
         }
-
 
         private static void ClearCurrentConsoleLine()
         {
