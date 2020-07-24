@@ -14,106 +14,157 @@ Things to do so far:
 
  * */
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Lab4CTaskTracker
 {
     class Program
     {
-        static void Main(string[] args)
+        public class Menu  //basic menu logic gotten from https://codereview.stackexchange.com/questions/198153/navigation-with-arrow-keys
         {
-            string message = "testing";
-            string color = "Red";
-            string color2 = "Blue";
+            public Menu(IEnumerable<string> items)
+            {
+                Items = items.ToArray();
+            }
 
-            //            ConsoleTextTest();
-            //WriteToFile();
-            Console.WriteLine("Initial colors");
-            ConsoleForegroundColor(color);
-            ConsoleBackgroundColor(color2);
-            DefaultColorColor();
-            Console.WriteLine("More text");
 
-            Console.WriteLine(message);
+            public IReadOnlyList<string> Items { get; }
+
+            public int SelectedIndex { get; private set; } = -1; // nothing selected
+
+            public string SelectedOption => SelectedIndex != -1 ? Items[SelectedIndex] : null;
+
+
+            public void MoveUp() => SelectedIndex = Math.Max(SelectedIndex - 1, 0);
+
+            public void MoveDown() => SelectedIndex = Math.Min(SelectedIndex + 1, Items.Count -1);
         }
 
-        private static void DefaultColorColor()
+
+        // logic for drawing menu list
+        public class ConsoleMenuPainter
         {
-            ConsoleBackgroundColor("Black");
-            ConsoleForegroundColor("White");
-        } // Sets the console text color to Black background and white text
-        private static void ConsoleForegroundColor(string color)
-        {
-            if (color == "Black")
-                Console.ForegroundColor = ConsoleColor.Black;
-            if (color == "Blue")
-                Console.ForegroundColor = ConsoleColor.Blue;
-            if (color == "Cyan")
-                Console.ForegroundColor = ConsoleColor.Cyan;
-            if (color == "DarkGray")
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-            if (color == "DarkBlue")
-                Console.ForegroundColor = ConsoleColor.DarkBlue;
-            if (color == "DarkCyan")
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-            if (color == "DarkGreen")
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-            if (color == "DarkMagenta")
-                Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            if (color == "DarkRed")
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-            if (color == "DarkYellow")
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-            if (color == "Green")
-                Console.ForegroundColor = ConsoleColor.Green;
-            if (color == "Gray")
-                Console.ForegroundColor = ConsoleColor.Gray;
-            if (color == "Magenta")
-                Console.ForegroundColor = ConsoleColor.Magenta;
-            if (color == "Red")
-                Console.ForegroundColor = ConsoleColor.Red;
-            if (color == "White")
-                Console.ForegroundColor = ConsoleColor.White;
-            if (color == "Yellow")
-                Console.ForegroundColor = ConsoleColor.Yellow;
-        } // Sets the foreground text color
-        private static void ConsoleBackgroundColor(string color)
-        {
-            if (color == "Black")
-                Console.BackgroundColor = ConsoleColor.Black;
-            if (color == "Blue")
-                Console.BackgroundColor = ConsoleColor.Blue;
-            if (color == "Cyan")
-                Console.BackgroundColor = ConsoleColor.Cyan;
-            if (color == "DarkGray")
-                Console.BackgroundColor = ConsoleColor.DarkGray;
-            if (color == "DarkBlue")
-                Console.BackgroundColor = ConsoleColor.DarkBlue;
-            if (color == "DarkCyan")
-                Console.BackgroundColor = ConsoleColor.DarkCyan;
-            if (color == "DarkGreen")
-                Console.BackgroundColor = ConsoleColor.DarkGreen;
-            if (color == "DarkMagenta")
-                Console.BackgroundColor = ConsoleColor.DarkMagenta;
-            if (color == "DarkRed")
-                Console.BackgroundColor = ConsoleColor.DarkRed;
-            if (color == "DarkYellow")
-                Console.BackgroundColor = ConsoleColor.DarkYellow;
-            if (color == "Green")
-                Console.BackgroundColor = ConsoleColor.Green;
-            if (color == "Gray")
-                Console.BackgroundColor = ConsoleColor.Gray;
-            if (color == "Magenta")
-                Console.BackgroundColor = ConsoleColor.Magenta;
-            if (color == "Red")
-                Console.BackgroundColor = ConsoleColor.Red;
-            if (color == "White")
-                Console.BackgroundColor = ConsoleColor.White;
-            if (color == "Yellow")
-                Console.BackgroundColor = ConsoleColor.Yellow;
-        } // Sets the background text color
+            readonly Menu menu;
+
+            public ConsoleMenuPainter(Menu menu)
+            {
+                this.menu = menu;
+            }
+
+            public void Paint(int x, int y)
+            {
+                for (int i = 0; i < menu.Items.Count; i++)
+                {
+                    Console.SetCursorPosition(x, y + i);
+
+                    //                  var color = menu.SelectedIndex == i ? ConsoleColor.Yellow : ConsoleColor.Gray;
+                    if (menu.SelectedIndex == i)
+                    {
+                        TextColor(11, 1);
+                    }
+                    else
+                    {
+                        TextColor();
+                    }
+
+//                    Console.ForegroundColor = color;
+                    Console.WriteLine(menu.Items[i]);
+                }
+            }
+        }
 
 
+        public static void Main(string[] args)
+        {
+            var menu = new Menu(new string[] { "John", "Bill", "Janusz", "Grażyna", "1500", ":)" });
+            var menuPainter = new ConsoleMenuPainter(menu);
+
+            bool done = false;
+
+            do
+            {
+                menuPainter.Paint(8, 5);
+
+                var keyInfo = Console.ReadKey();
+
+                switch (keyInfo.Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        menu.MoveUp();
+                        break;
+                    case ConsoleKey.DownArrow:
+                        menu.MoveDown();
+                        break;
+                    case ConsoleKey.Enter:
+                        done = true;
+                        break;
+                }
+
+                TextColor(11,0);
+                ClearCurrentConsoleLine();
+                Console.WriteLine("Selected option: " + (menu.SelectedOption ?? "(nothing)"));
+            }
+            while (!done);
+            Console.ReadKey();
+        }
+
+
+        private static void ClearCurrentConsoleLine()
+        {
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(0, Console.CursorTop);
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(8, currentLineCursor);
+        }
+
+        private static void TextColor(int fore = 15, int back = 0)
+        {
+            Console.ForegroundColor = (ConsoleColor)(fore);
+            Console.BackgroundColor = (ConsoleColor)(back);
+        }
+        private static void ConsoleColorTextTest() //Test to see all the different colors available on the console
+        {
+            ConsoleColor[] colors = (ConsoleColor[])ConsoleColor.GetValues(typeof(ConsoleColor));
+
+            Console.ResetColor();
+            int i = 0;
+            foreach (var color in colors)
+            {
+                Console.BackgroundColor = color;
+                if (Console.BackgroundColor == Console.ForegroundColor)
+                {
+                    Console.ForegroundColor = colors[i + 3];
+                }
+                Console.WriteLine($"This background is color #{i} {color}");
+                i++;
+                Console.ResetColor();
+            }
+            i = 0;
+            foreach (var color in colors)
+            {
+                Console.ForegroundColor = color;
+                if (Console.BackgroundColor == Console.ForegroundColor)
+                {
+                    Console.BackgroundColor = colors[i + 3];
+                }
+                Console.WriteLine($"This text is color #{i} {color}");
+                i++;
+                Console.ResetColor();
+            }
+        }
+        private static void ToDoTextColor() //Sets the console text to black background and Green Foreground
+        {
+            TextColor(10);
+        }
+        private static void StrikeOutTextColor() // Sets the console text color to Black background and Dark Gray text
+        {
+            TextColor(8);
+        }
         private static void WriteToFile()
         {
             try
@@ -152,5 +203,6 @@ namespace Lab4CTaskTracker
 
             Console.ReadKey(true);
         }
+
     }
 }
