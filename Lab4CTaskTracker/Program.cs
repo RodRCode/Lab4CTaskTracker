@@ -20,6 +20,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Lab4CTaskTracker
 {
@@ -56,7 +57,7 @@ namespace Lab4CTaskTracker
                 this.menu = menu;
             }
 
-            public void Paint(int x, int y)
+            public void Paint(int x, int y, ref List<string> taskStatus)
             {
                 for (int i = 0; i < menu.Items.Count; i++)
                 {
@@ -69,7 +70,16 @@ namespace Lab4CTaskTracker
                     }
                     else
                     {
-                        TextColor();
+                        ToDoTextColor();
+                        switch (taskStatus[i])
+                        {
+                            case "Todo":
+                                ToDoTextColor();
+                                break;
+                            case "Delete":
+                                StrikeOutTextColor();
+                                break;
+                        }
                     }
 
                     //                    Console.ForegroundColor = color;
@@ -82,35 +92,66 @@ namespace Lab4CTaskTracker
 
         public static void Main(string[] args)
         {
+            //       ConsoleColorTextTest();
+            //       Console.ReadLine();
+            bool finished = false;
 
-            var menu = new Menu(new string[] { "John", "Bill", "Janusz", "Grażyna", "1500", ":)" });
-            var toDo = new { Task = "Thing 1", Status = "G" };
-            //toDo[] tasks = new toDo[10];
+            List<string> taskList = new List<string>();
+            List<string> taskStatus = new List<string>();
+            string selectionChoice = "";
+            int selectionIndex = 0;
+            finished = false;
 
-            string result = "";
+            taskList.Add("Thing 1");
+            taskStatus.Add("ToDo");
+            taskList.Add("Thing 2");
+            taskStatus.Add("Delete");
+            taskList.Add("Thing 3");
+            taskStatus.Add("ToDo");
 
-            result = CallMenu(menu);
-
-            menu = new Menu(new string[] { "Luke", "Leia", "C3PO", "R2D2", "Darth Vader", "Yoda", "Boba Fett", "Chewbacca", "Old Ben Kenobi", "Red 5", "Han Solo", "The Emperor", "Admiral Ackbar", "Mace Windu", "The quick brown fox jumps over the lazy dog" });
-
-            result = CallMenu(menu);
-
-            Console.WriteLine($"You selected {menu.SelectedOption}, it was item number {menu.SelectedIndex + 1}");
-            Console.ReadKey();
-
-            Console.WriteLine($"Here are the items from the anonymous class object, task: {toDo.Task}, and status: {toDo.Status}");
-        }
-
-        private static string CallMenu(Menu menu)
-        {
-            Console.Clear();
-            var menuPainter = new ConsoleMenuPainter(menu);
-
-            bool done = false;
 
             do
             {
-                menuPainter.Paint(8, 5);
+                var menu = new Menu(taskList);
+                selectionChoice = CallMenu(menu, ref taskStatus);
+                switch (selectionChoice)
+                {
+                    case "Add":
+                        Console.Write("Enter what you wanted added to the list then press the enter key : ");
+                        string input = "";
+                        input = Console.ReadLine();
+                        taskList.Add(input);
+                        taskStatus.Add("ToDo");
+                        Console.WriteLine("Items so far on the list");
+                        int j = 0;
+                        foreach (var task in taskList)
+                        {
+                            j++;
+                            Console.WriteLine($"{j}. {task}");
+                        }
+                        break;
+                    case "Quit":
+                        Console.WriteLine("That's all folks!");
+                        finished = true;
+                        break;
+                }
+                Console.WriteLine($"First do loop selected {menu.SelectedOption}, it was item number {menu.SelectedIndex + 1}");
+                Console.ReadKey();
+            } while (finished == false);
+        }
+
+        public static string CallMenu(Menu menu, ref List<string> taskStatus)
+        {
+            Console.Clear();
+            var menuPainter = new ConsoleMenuPainter(menu);
+            string selectionChoice = "";
+            bool done = false;
+
+            Console.WriteLine("Enter 'a' or 'A' to add a task!");
+
+            do
+            {
+                menuPainter.Paint(8, 5, ref taskStatus);
 
                 var keyInfo = Console.ReadKey();
 
@@ -122,6 +163,14 @@ namespace Lab4CTaskTracker
                     case ConsoleKey.DownArrow:
                         menu.MoveDown();
                         break;
+                    case ConsoleKey.A:
+                        selectionChoice = "Add";
+                        done = true;
+                        break;
+                    case ConsoleKey.Q:
+                        selectionChoice = "Quit";
+                        done = true;
+                        break;
                     case ConsoleKey.Enter:
                         done = true;
                         break;
@@ -129,10 +178,10 @@ namespace Lab4CTaskTracker
 
                 TextColor(11, 0);
                 ClearCurrentConsoleLine();
-                Console.WriteLine($"Selected option #{menu.SelectedIndex + 1}: " + (menu.SelectedOption ?? "(nothing)"));
+                Console.WriteLine($"{ taskStatus[menu.SelectedIndex]}: " + (menu.SelectedOption ?? "(nothing)"));
             }
             while (!done);
-            return (menu.SelectedOption);
+            return selectionChoice;
         }
 
         private static void ClearCurrentConsoleLine()
