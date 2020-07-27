@@ -151,6 +151,8 @@ namespace Lab4CTaskTracker
                         break;
 
                     case "Quit":
+                        WriteToFile(taskList, "taskList.txt");
+                        WriteToFile(taskStatus, "taskStatus.txt");
                         Console.WriteLine("That's all folks!");
                         finished = true;
                         break;
@@ -297,16 +299,17 @@ namespace Lab4CTaskTracker
         {
             TextColor(8);
         }
-        private static void WriteToFile()
+        private static void WriteToFile(List<string> listToWriteToFile, string fileName)
         {
             try
             {
                 //Pass the filepath and filename to the StreamWriter Constructor
-                StreamWriter sw = new StreamWriter("Test.txt");
+                StreamWriter sw = new StreamWriter(fileName);
                 //Write a line of text
-                sw.WriteLine("Hello World!!");
-                //Write a second line of text
-                sw.WriteLine("From the StreamWriter class");
+                foreach (var item in fileName)
+                {
+                    sw.WriteLine(item);
+                }
                 //Close the file
                 sw.Close();
             }
