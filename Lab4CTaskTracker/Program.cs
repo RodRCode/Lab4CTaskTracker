@@ -36,7 +36,7 @@ namespace Lab4CTaskTracker
 
             public IReadOnlyList<string> Items { get; }
 
-            public int SelectedIndex { get; private set; } = -1; // nothing selected
+            public int SelectedIndex { get; private set; } = 0; // nothing selected
 
             public string SelectedOption => SelectedIndex != -1 ? Items[SelectedIndex] : null;
 
@@ -63,7 +63,6 @@ namespace Lab4CTaskTracker
                 {
                     Console.SetCursorPosition(x, y + i);
 
-                    //                  var color = menu.SelectedIndex == i ? ConsoleColor.Yellow : ConsoleColor.Gray;
                     if (menu.SelectedIndex == i)
                     {
                         TextColor(11, 1);
@@ -73,16 +72,15 @@ namespace Lab4CTaskTracker
                         ToDoTextColor();
                         switch (taskStatus[i])
                         {
-                            case "Todo":
-                                ToDoTextColor();
+                            case "Incomplete":
+                                IncompleteTextColor();
                                 break;
-                            case "Delete":
+                            case "Completed":
                                 StrikeOutTextColor();
                                 break;
                         }
                     }
 
-                    //                    Console.ForegroundColor = color;
                     Console.Write($"{i + 1}. ");
                     Console.WriteLine(menu.Items[i]);
                 }
@@ -92,26 +90,31 @@ namespace Lab4CTaskTracker
 
         public static void Main(string[] args)
         {
-            //       ConsoleColorTextTest();
-            //       Console.ReadLine();
+            //            ConsoleColorTextTest();
+            //            Console.ReadLine();
             bool finished = false;
 
             List<string> taskList = new List<string>();
             List<string> taskStatus = new List<string>();
             string selectionChoice = "";
-            int selectionIndex = 0;
             finished = false;
 
-            taskList.Add("Thing 1");
-            taskStatus.Add("ToDo");
-            taskList.Add("Thing 2");
-            taskStatus.Add("Delete");
-            taskList.Add("Thing 3");
-            taskStatus.Add("ToDo");
-
+            taskList.Add("");
+            taskStatus.Add("");
+            //   taskList.Add("Thing 2");
+            //   taskStatus.Add("Completed");
+            //   taskList.Add("Thing 3");
+            //   taskStatus.Add("ToDo");
 
             do
             {
+                if (taskList[0] == "")
+                {
+                    Console.Write("Your Task list is empty! Please enter something to do!: ");
+                    taskList[0] = Console.ReadLine();
+                    taskStatus[0] = "ToDo";
+                }
+
                 var menu = new Menu(taskList);
                 selectionChoice = CallMenu(menu, ref taskStatus);
                 switch (selectionChoice)
@@ -130,13 +133,21 @@ namespace Lab4CTaskTracker
                             Console.WriteLine($"{j}. {task}");
                         }
                         break;
+                    case "Completed":
+                        taskStatus[menu.SelectedIndex] = "Completed";
+                        break;
+                    case "Incomplete":
+                        taskList.Add(taskList[menu.SelectedIndex]);
+                        taskStatus.Add("Incomplete");
+                        taskList.RemoveAt(menu.SelectedIndex);
+                        taskStatus.RemoveAt(menu.SelectedIndex);
+                        break;
+
                     case "Quit":
                         Console.WriteLine("That's all folks!");
                         finished = true;
                         break;
                 }
-                Console.WriteLine($"First do loop selected {menu.SelectedOption}, it was item number {menu.SelectedIndex + 1}");
-                Console.ReadKey();
             } while (finished == false);
         }
 
@@ -147,11 +158,12 @@ namespace Lab4CTaskTracker
             string selectionChoice = "";
             bool done = false;
 
-            Console.WriteLine("Enter 'a' or 'A' to add a task!");
+            Console.WriteLine("Enter 'a' to add a task, 'c' to mark it complete");
+            Console.WriteLine("'i' marks it incomplete, 'q' or 'Enter' exits");
 
             do
             {
-                menuPainter.Paint(8, 5, ref taskStatus);
+                menuPainter.Paint(8, 7, ref taskStatus);
 
                 var keyInfo = Console.ReadKey();
 
@@ -167,14 +179,24 @@ namespace Lab4CTaskTracker
                         selectionChoice = "Add";
                         done = true;
                         break;
+                    case ConsoleKey.C:
+                        selectionChoice = "Completed";
+                        done = true;
+                        break;
+                    case ConsoleKey.I:
+                        selectionChoice = "Incomplete";
+                        done = true;
+                        break;
                     case ConsoleKey.Q:
                         selectionChoice = "Quit";
                         done = true;
                         break;
                     case ConsoleKey.Enter:
+                        selectionChoice = "Quit";
                         done = true;
                         break;
                 }
+
 
                 TextColor(11, 0);
                 ClearCurrentConsoleLine();
@@ -230,6 +252,10 @@ namespace Lab4CTaskTracker
         private static void ToDoTextColor() //Sets the console text to black background and Green Foreground
         {
             TextColor(10);
+        }
+        private static void IncompleteTextColor()
+        {
+            TextColor(14);
         }
         private static void StrikeOutTextColor() // Sets the console text color to Black background and Dark Gray text
         {
