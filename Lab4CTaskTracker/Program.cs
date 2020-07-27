@@ -49,7 +49,7 @@ namespace Lab4CTaskTracker
         // logic for drawing menu list
         public class ConsoleMenuPainter
         {
-            readonly Menu menu;
+            Menu menu;
 
             public ConsoleMenuPainter(Menu menu)
             {
@@ -82,29 +82,32 @@ namespace Lab4CTaskTracker
 
         public static void Main(string[] args)
         {
+
             var menu = new Menu(new string[] { "John", "Bill", "Janusz", "Grażyna", "1500", ":)" });
+            var toDo = new { Task = "Thing 1", Status = "G" };
+            //toDo[] tasks = new toDo[10];
 
             string result = "";
-            int selection = 0;
 
-            (result, selection) = CallMenu(menu);
+            result = CallMenu(menu);
 
             menu = new Menu(new string[] { "Luke", "Leia", "C3PO", "R2D2", "Darth Vader", "Yoda", "Boba Fett", "Chewbacca", "Old Ben Kenobi", "Red 5", "Han Solo", "The Emperor", "Admiral Ackbar", "Mace Windu", "The quick brown fox jumps over the lazy dog" });
 
-            (result, selection) = CallMenu(menu);
+            result = CallMenu(menu);
 
-            Console.WriteLine($"You selected {result}, it was item number {selection}");
+            Console.WriteLine($"You selected {menu.SelectedOption}, it was item number {menu.SelectedIndex + 1}");
             Console.ReadKey();
+
+            Console.WriteLine($"Here are the items from the anonymous class object, task: {toDo.Task}, and status: {toDo.Status}");
         }
 
-        private static (string, int) CallMenu(Menu menu)
+        private static string CallMenu(Menu menu)
         {
             Console.Clear();
             var menuPainter = new ConsoleMenuPainter(menu);
 
             bool done = false;
 
-            int selection = 0;
             do
             {
                 menuPainter.Paint(8, 5);
@@ -115,13 +118,9 @@ namespace Lab4CTaskTracker
                 {
                     case ConsoleKey.UpArrow:
                         menu.MoveUp();
-                        if (selection >= 2)
-                            selection--;
                         break;
                     case ConsoleKey.DownArrow:
                         menu.MoveDown();
-                        if (selection <= 14)
-                            selection++;
                         break;
                     case ConsoleKey.Enter:
                         done = true;
@@ -130,10 +129,10 @@ namespace Lab4CTaskTracker
 
                 TextColor(11, 0);
                 ClearCurrentConsoleLine();
-                Console.WriteLine($"Selected option #{selection}: " + (menu.SelectedOption ?? "(nothing)"));
+                Console.WriteLine($"Selected option #{menu.SelectedIndex + 1}: " + (menu.SelectedOption ?? "(nothing)"));
             }
             while (!done);
-            return (menu.SelectedOption, selection);
+            return (menu.SelectedOption);
         }
 
         private static void ClearCurrentConsoleLine()
@@ -224,6 +223,29 @@ namespace Lab4CTaskTracker
             Console.Write("Press any key to continue . . . ");
 
             Console.ReadKey(true);
+        }
+
+        public static void ResizeStringArrayToArrayWithoutNulls(string[] oldArrays)
+        {
+            int nonNullInString = 0;
+            foreach (var oldArray in oldArrays)
+            {
+                if (oldArray != null)
+                    nonNullInString++;
+            }
+
+            string[] newArrays = new string[nonNullInString];
+            nonNullInString = 0;
+            foreach (var oldArray in oldArrays)
+            {
+                if (oldArray != null)
+                {
+                    newArrays[nonNullInString++] = oldArray;
+                }
+            }
+
+            Array.Resize(ref oldArrays, nonNullInString);
+            oldArrays = newArrays;
         }
 
     }
