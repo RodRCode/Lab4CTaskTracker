@@ -90,8 +90,8 @@ namespace Lab4CTaskTracker
 
         public static void Main(string[] args)
         {
-            //            ConsoleColorTextTest();
-            //            Console.ReadLine();
+            //               ConsoleColorTextTest();
+            //               Console.ReadLine();
             bool finished = false;
 
             List<string> taskList = new List<string>();
@@ -132,10 +132,13 @@ namespace Lab4CTaskTracker
                 switch (selectionChoice)
                 {
                     case "Add":
+                        TextColor();
                         Console.WriteLine();
                         Console.Write("     Enter something to do: ");
+                        ToDoTextColor();
                         string input = "";
                         input = Console.ReadLine();
+                        TextColor();
                         taskList.Add(input);
                         taskStatus.Add("ToDo");
                         Console.WriteLine("Items so far on the list");
@@ -159,7 +162,7 @@ namespace Lab4CTaskTracker
                     case "Quit":
                         WriteToFile(taskList, "taskList.txt");
                         WriteToFile(taskStatus, "taskStatus.txt");
-                        Console.WriteLine("That's all folks!");
+                        Console.WriteLine("That's all folks!\nYou may now close the window.");
                         finished = true;
                         break;
                 }
@@ -197,7 +200,7 @@ namespace Lab4CTaskTracker
 
             do
             {
-                menuPainter.Paint(5, 7, ref taskStatus);
+                menuPainter.Paint(5, 5, ref taskStatus);
 
                 var keyInfo = Console.ReadKey();
 
@@ -238,7 +241,7 @@ namespace Lab4CTaskTracker
                 }
 
 
-                TextColor(11, 0);
+                TextColor();
                 ClearCurrentConsoleLine();
                 Console.WriteLine();
                 ClearCurrentConsoleLine();
@@ -315,10 +318,10 @@ namespace Lab4CTaskTracker
                 foreach (var item in listToWriteToFile)
                 {
                     sw.WriteLine(item);
-                    Console.WriteLine(item);
                 }
                 //Close the file
                 sw.Close();
+                Console.WriteLine($"The file {fileName} was written to successfully!");
             }
             catch (Exception e)
             {
@@ -326,7 +329,7 @@ namespace Lab4CTaskTracker
             }
             finally
             {
-                Console.WriteLine("Executing finally block.");
+                Console.WriteLine("Hitting the writing finally block");
             }
         }
         private static void ReadFromFile(ref List<string> listToReadFromFile, string fileName)
