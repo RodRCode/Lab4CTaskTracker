@@ -246,7 +246,7 @@ namespace Lab4CTaskTracker
             int currentLineCursor = Console.CursorTop;
             Console.SetCursorPosition(0, Console.CursorTop);
             Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(8, currentLineCursor);
+            Console.SetCursorPosition(5, currentLineCursor);
         }
 
         private static void TextColor(int fore = 15, int back = 0)
