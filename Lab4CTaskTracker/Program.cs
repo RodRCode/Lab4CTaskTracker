@@ -306,9 +306,10 @@ namespace Lab4CTaskTracker
                 //Pass the filepath and filename to the StreamWriter Constructor
                 StreamWriter sw = new StreamWriter(fileName);
                 //Write a line of text
-                foreach (var item in fileName)
+                foreach (var item in listToWriteToFile)
                 {
                     sw.WriteLine(item);
+                    Console.WriteLine(item);
                 }
                 //Close the file
                 sw.Close();
