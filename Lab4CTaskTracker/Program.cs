@@ -99,8 +99,14 @@ namespace Lab4CTaskTracker
             string selectionChoice = "";
             finished = false;
 
-            taskList.Add("");
-            taskStatus.Add("");
+            ReadFromFile(ref taskList, "taskList.txt");
+            ReadFromFile(ref taskStatus, "taskStatus.txt");
+
+            if (taskList.Count == 0)
+            {
+                taskList.Add("");
+                taskStatus.Add("");
+            }
 
             /* test code
                taskList.Add("Thing 1");
@@ -321,6 +327,25 @@ namespace Lab4CTaskTracker
             finally
             {
                 Console.WriteLine("Executing finally block.");
+            }
+        }
+        private static void ReadFromFile(ref List<string> listToReadFromFile, string fileName)
+        {
+            string inputString = "";
+            try
+            {
+                using (StreamReader sr = new StreamReader(fileName))
+                {
+                    while (sr.Peek() >= 0)
+                    {
+                        inputString = sr.ReadLine();
+                        listToReadFromFile.Add(inputString);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The process failed: {0}", e.ToString());
             }
         }
 
