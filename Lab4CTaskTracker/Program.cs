@@ -116,7 +116,7 @@ namespace Lab4CTaskTracker
                 if (taskList[0] == "")
                 {
                     Console.Clear();
-                    Console.Write("Your Task list is empty! Please enter something to do!: ");
+                    Console.Write("Your Task list is empty!\nPlease enter something to do!: ");
                     taskList[0] = Console.ReadLine();
                     taskStatus[0] = "ToDo";
                 }
@@ -126,7 +126,8 @@ namespace Lab4CTaskTracker
                 switch (selectionChoice)
                 {
                     case "Add":
-                        Console.Write("Enter what you wanted added to the list then press the enter key : ");
+                        Console.WriteLine();
+                        Console.Write("     Enter something to do: ");
                         string input = "";
                         input = Console.ReadLine();
                         taskList.Add(input);
