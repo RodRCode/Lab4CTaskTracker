@@ -101,15 +101,21 @@ namespace Lab4CTaskTracker
 
             taskList.Add("");
             taskStatus.Add("");
-            //   taskList.Add("Thing 2");
-            //   taskStatus.Add("Completed");
-            //   taskList.Add("Thing 3");
-            //   taskStatus.Add("ToDo");
+
+            /* test code
+               taskList.Add("Thing 1");
+               taskStatus.Add("Completed");
+               taskList.Add("Thing 2");
+               taskStatus.Add("Incomplete");
+               taskList.Add("Thing 3");
+               taskStatus.Add("ToDo");
+            */
 
             do
             {
                 if (taskList[0] == "")
                 {
+                    Console.Clear();
                     Console.Write("Your Task list is empty! Please enter something to do!: ");
                     taskList[0] = Console.ReadLine();
                     taskStatus[0] = "ToDo";
@@ -148,6 +154,24 @@ namespace Lab4CTaskTracker
                         finished = true;
                         break;
                 }
+                bool firstItemComplete = true;
+                while (firstItemComplete)
+                {
+                    if (taskStatus[0] == "Completed" && (taskStatus.Count > 1))
+                    {
+                        taskList.RemoveAt(0);
+                        taskStatus.RemoveAt(0);
+                    }
+                    else if (taskStatus[0] == "Completed" && (taskStatus.Count == 1))
+                    {
+                        taskList[0] = "";
+                        taskStatus[0] = "";
+                    }
+                    else
+                    {
+                        firstItemComplete = false;
+                    }
+                }
             } while (finished == false);
         }
 
@@ -160,10 +184,11 @@ namespace Lab4CTaskTracker
 
             Console.WriteLine("Enter 'a' to add a task, 'c' to mark it complete");
             Console.WriteLine("'i' marks it incomplete, 'q' or 'Enter' exits");
+            Console.WriteLine("You can use the up and down arrow keys to move through your list!");
 
             do
             {
-                menuPainter.Paint(8, 7, ref taskStatus);
+                menuPainter.Paint(5, 7, ref taskStatus);
 
                 var keyInfo = Console.ReadKey();
 
@@ -175,6 +200,12 @@ namespace Lab4CTaskTracker
                     case ConsoleKey.DownArrow:
                         menu.MoveDown();
                         break;
+                    //TODO         case ConsoleKey.RightArrow:
+                    //             menu.PageRight();
+                    //             break;
+                    //TODO         case ConsoleKey.LeftArrow:
+                    //             menu.PageLeft();
+                    //             break;
                     case ConsoleKey.A:
                         selectionChoice = "Add";
                         done = true;
@@ -199,6 +230,10 @@ namespace Lab4CTaskTracker
 
 
                 TextColor(11, 0);
+                ClearCurrentConsoleLine();
+                Console.WriteLine();
+                ClearCurrentConsoleLine();
+                Console.WriteLine("Selection Status:");
                 ClearCurrentConsoleLine();
                 Console.WriteLine($"{ taskStatus[menu.SelectedIndex]}: " + (menu.SelectedOption ?? "(nothing)"));
             }
