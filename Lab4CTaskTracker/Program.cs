@@ -2,17 +2,15 @@
  * You have been hired by a firm to provide a console-based prototype of a task tracking application. Based on product owner requirements, spend the next few days implementing a task tracking application.
    
 Things to do so far:
-    Need to figure out how to manipulate highlighted text on the console
-    (stretch) get string commands for up arrows, down arrows and such.
-    Do I need to rewrite the console text every time?
-    highlight text
-    strike through text
-    read and write to data file
-    How to keep track of data file and if an item has been actioned or deleted or pushed off to the future
-    move between pages on the screen (15 items at a go)
-    I am thinking the pointer to use is the one that has a pointer at the head and tail of the string to go to the next and previous items
-
- * */
+done!    Need to figure out how to manipulate highlighted text on the console
+done!    (stretch) get string commands for up arrows, down arrows and such.
+done!    Do I need to rewrite the console text every time?
+done!    highlight text
+Done!    strike through text
+Done!    read and write to data file
+stretch  data file for when an item has been actioned or deleted or pushed off to the future
+Done!    move between pages on the screen (15 items at a go)
+*/
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -26,37 +24,25 @@ namespace Lab4CTaskTracker
 {
     class Program
     {
-        public class Menu  //basic menu logic gotten from https://codereview.stackexchange.com/questions/198153/navigation-with-arrow-keys
+        public class Menu  //basic menu logic gotten from https://codereview.stackexchange.com/questions/198153/navigation-with-arrow-keys and then modified for my task
         {
             public Menu(IEnumerable<string> items)
             {
                 Items = items.ToArray();
             }
-
-
             public IReadOnlyList<string> Items { get; }
-
             public int SelectedIndex { get; private set; } = 0; // nothing selected
-
             public string SelectedOption => SelectedIndex != -1 ? Items[SelectedIndex] : null;
-
             public void MoveUp() => SelectedIndex = Math.Max(SelectedIndex - 1, 0);
-
             public void MoveDown() => SelectedIndex = Math.Min(SelectedIndex + 1, Items.Count - 1);
-
         }
-
-
-        // logic for drawing menu list
-        public class ConsoleMenuPainter
+        public class ConsoleMenuPainter //drawing menu list
         {
             Menu menu;
-
             public ConsoleMenuPainter(Menu menu)
             {
                 this.menu = menu;
             }
-
             public void Paint(int x, int y, ref List<string> pageTaskStatus, ref int currentPage)
             {
                 for (int i = 0; i < menu.Items.Count; i++)
@@ -65,7 +51,7 @@ namespace Lab4CTaskTracker
 
                     if (menu.SelectedIndex == i)
                     {
-                        TextColor(11, 1);
+                        TextColor(11, 1); //Good old C=64 colors, they make me happy
                     }
                     else
                     {
@@ -86,48 +72,29 @@ namespace Lab4CTaskTracker
                 }
             }
         }
-
-
-        public static void Main(string[] args)
+        public static void Main(string[] args) //Main menu, I didn't break this out further, but I probably should have
         {
-            //   int test = 59 % 15;
-            //   int test2 = 59 / 15;
-            //   Console.WriteLine($"59 % 15 = {test}");
-            //   Console.WriteLine($"59 / 15 = {test2}");
-            //               ConsoleColorTextTest();
-            //                  Console.ReadLine();
-
-
             bool finished = false;
 
-            List<string> taskList = new List<string>();
-            List<string> taskStatus = new List<string>();
+            List<string> taskList = new List<string>();  //creating my two lists, one for the tasks and the other
+            List<string> taskStatus = new List<string>(); //for the status of the items
             string selectionChoice = "";
             finished = false;
 
-            ReadFromFile(ref taskList, "taskList.txt");
+            ReadFromFile(ref taskList, "taskList.txt");  //pulls data from the drive if it is there
             ReadFromFile(ref taskStatus, "taskStatus.txt");
 
-            if (taskList.Count == 0)
+            if (taskList.Count == 0) //case for when this is a new list
             {
                 taskList.Add("");
                 taskStatus.Add("");
             }
 
-            /* test code
-               taskList.Add("Thing 1");
-               taskStatus.Add("Completed");
-               taskList.Add("Thing 2");
-               taskStatus.Add("Incomplete");
-               taskList.Add("Thing 3");
-               taskStatus.Add("ToDo");
-            */
-
-            int currentPage = 0;
+            int currentPage = 0;  //Variable to keep track of which page we are on so I know which parts of the data to display
 
             do
             {
-                if (taskList[0] == "")
+                if (taskList[0] == "")  //case for when the list is empty (or the first time for a new list)
                 {
                     Console.Clear();
                     Console.Write("Your Task list is empty!\nPlease enter something to do!: ");
@@ -135,54 +102,30 @@ namespace Lab4CTaskTracker
                     taskStatus[0] = "ToDo";
                 }
 
-                int maxPage = taskList.Count() / 15;
-                int maxPageAdjust = 0;
+                int maxPage = taskList.Count() / 15;  //set up variable to make sure we don't exceed the maximum possible total of possible pages
+                int maxPageAdjust = 0;  //initialize and set correction variable for edge case to report the proper number of pages when the number of pages is divisible by 15.  Damn you off by one errors!
                 if ((taskList.Count() % 15) == 0)
                 {
                     maxPageAdjust--;
                 }
                 
 
-                List<string> pageTaskList = new List<string>();
+                List<string> pageTaskList = new List<string>();  //lists for the pages in case there are more than 15 tasks
                 List<string> pageTaskStatus = new List<string>();
 
-                foreach (var item in taskList.Skip(15 * currentPage).Take(15))
+                foreach (var item in taskList.Skip(15 * currentPage).Take(15)) //only pull the part of the larger list that we need
                 {
                     pageTaskList.Add(item);
                 }
 
-                foreach (var item in taskStatus.Skip(15 * currentPage).Take(15))
+                foreach (var item in taskStatus.Skip(15 * currentPage).Take(15)) //same, but for the status list
                 {
                     pageTaskStatus.Add(item);
                 }
 
-                /*
-                if (maxPage > 0)
-                {
-                    for (int i = 0; i < 15; i++)
-                    {
-                        if (taskStatus[i + (currentPage * 15)] != null)
-                        {
-                            pageTaskStatus.Add(taskStatus[i + (currentPage * 15)]);
-                            pageTaskList.Add(taskList[i + (currentPage * 15)]);
-                        }
-                    }
-                }
-                else
-                {
-                    pageTaskList = taskList;
-                    pageTaskStatus = taskStatus;
-                }
-                */
-
-                //        foreach (var item in pageTaskList)
-                //        {
-                //            Console.WriteLine(item);
-                //        }
-
-                var menu = new Menu(pageTaskList);
+                var menu = new Menu(pageTaskList);  //sends the page list to be displayed
                 selectionChoice = CallMenu(menu, ref pageTaskStatus, ref currentPage, ref maxPage, ref maxPageAdjust);
-                switch (selectionChoice)
+                switch (selectionChoice) //what do we do based on the user's input?
                 {
                     case "Add":
                         TextColor();
@@ -194,26 +137,23 @@ namespace Lab4CTaskTracker
                         TextColor();
                         taskList.Add(input);
                         taskStatus.Add("ToDo");
-                        Console.WriteLine("Items so far on the list");
-                        int j = 0;
-                        foreach (var task in taskList)
-                        {
-                            j++;
-                            Console.WriteLine($"{j}. {task}");
-                        }
                         break;
+
                     case "Completed":
                         taskStatus[menu.SelectedIndex + (15 * currentPage)] = "Completed";
                         break;
+
                     case "Incomplete":
                         taskList.Add(taskList[menu.SelectedIndex + (15 * currentPage)]);
                         taskStatus.Add("Incomplete");
                         taskList.RemoveAt(menu.SelectedIndex + (15 * currentPage));
                         taskStatus.RemoveAt(menu.SelectedIndex + (15 * currentPage));
                         break;
+
                     case "PageDown":
                         currentPage--;
                         break;
+
                     case "PageUp":
                         if (((taskList.Count() % 15) == 0) && (currentPage == (maxPage - 1)))
                         { }
@@ -222,6 +162,7 @@ namespace Lab4CTaskTracker
                             currentPage++;
                         }
                         break;
+
                     case "Quit":
                         WriteToFile(taskList, "taskList.txt");
                         WriteToFile(taskStatus, "taskStatus.txt");
@@ -229,7 +170,7 @@ namespace Lab4CTaskTracker
                         finished = true;
                         break;
                 }
-                bool firstItemComplete = true;
+                bool firstItemComplete = true; //Here is where we clean the list of the completed items at the top
                 while (firstItemComplete)
                 {
                     if (taskStatus[0] == "Completed" && (taskStatus.Count > 1))
@@ -237,7 +178,7 @@ namespace Lab4CTaskTracker
                         taskList.RemoveAt(0);
                         taskStatus.RemoveAt(0);
                     }
-                    else if (taskStatus[0] == "Completed" && (taskStatus.Count == 1))
+                    else if (taskStatus[0] == "Completed" && (taskStatus.Count == 1))  // edge case for compeleting the last item on the list, set it as a new list
                     {
                         taskList[0] = "";
                         taskStatus[0] = "";
@@ -249,8 +190,8 @@ namespace Lab4CTaskTracker
                 }
             } while (finished == false);
         }
-
         public static string CallMenu(Menu menu, ref List<string> pageTaskStatus, ref int currentPage, ref int maxPage, ref int maxPageAdjust)
+            //this does the work of setting up the menu display and instructions to the user
         {
             Console.Clear();
             var menuPainter = new ConsoleMenuPainter(menu);
@@ -265,8 +206,7 @@ namespace Lab4CTaskTracker
             {
                 menuPainter.Paint(5, 5, ref pageTaskStatus, ref currentPage);
 
-                var keyInfo = Console.ReadKey();
-
+                var keyInfo = Console.ReadKey();  //read inputs and sends back the response
                 switch (keyInfo.Key)
                 {
                     case ConsoleKey.UpArrow:
@@ -311,7 +251,8 @@ namespace Lab4CTaskTracker
                         break;
                 }
 
-
+                //text at the bottom of the display, shows what item is selected, what its
+                //status is, and what page you are on out of x number of possible 15 item pages
                 TextColor();
                 ClearCurrentConsoleLine();
                 Console.WriteLine();
@@ -320,14 +261,13 @@ namespace Lab4CTaskTracker
                 ClearCurrentConsoleLine();
                 Console.WriteLine($"{menu.SelectedIndex + 1 + (15 * currentPage)}: " + (menu.SelectedOption ?? "(nothing)"));
                 int tempMaxPage = maxPage +  maxPageAdjust;
-
-                Console.WriteLine($"You are on Page {currentPage + 1} of {tempMaxPage + 1}");
+                Console.WriteLine($"\n     You are on Page {currentPage + 1} of {tempMaxPage + 1}");
             }
             while (!done);
             return selectionChoice;
         }
 
-        private static void ClearCurrentConsoleLine()
+        private static void ClearCurrentConsoleLine() //handy to clear just a line, not the entire screen
         {
             int currentLineCursor = Console.CursorTop;
             Console.SetCursorPosition(0, Console.CursorTop);
@@ -335,7 +275,7 @@ namespace Lab4CTaskTracker
             Console.SetCursorPosition(5, currentLineCursor);
         }
 
-        private static void TextColor(int fore = 15, int back = 0)
+        private static void TextColor(int fore = 15, int back = 0) //main way I change text color, set for overloading
         {
             Console.ForegroundColor = (ConsoleColor)(fore);
             Console.BackgroundColor = (ConsoleColor)(back);
@@ -374,7 +314,7 @@ namespace Lab4CTaskTracker
         {
             TextColor(10);
         }
-        private static void IncompleteTextColor()
+        private static void IncompleteTextColor() //sets the console text to yellow with a black background
         {
             TextColor(14);
         }
@@ -382,7 +322,7 @@ namespace Lab4CTaskTracker
         {
             TextColor(8);
         }
-        private static void WriteToFile(List<string> listToWriteToFile, string fileName)
+        private static void WriteToFile(List<string> listToWriteToFile, string fileName) //writes data to a file on the disk
         {
             try
             {
@@ -406,7 +346,7 @@ namespace Lab4CTaskTracker
                 Console.WriteLine("Hitting the writing finally block");
             }
         }
-        private static void ReadFromFile(ref List<string> listToReadFromFile, string fileName)
+        private static void ReadFromFile(ref List<string> listToReadFromFile, string fileName) //reads the data from a file on the disk
         {
             string inputString = "";
             try
@@ -425,45 +365,5 @@ namespace Lab4CTaskTracker
                 Console.WriteLine("The process failed: {0}", e.ToString());
             }
         }
-
-        private static void ConsoleTextTest()
-        {
-            // setting the window size 
-            Console.SetWindowSize(40, 40);
-
-            // setting buffer size of console 
-            Console.SetBufferSize(80, 80);
-
-            // using the method 
-            Console.SetCursorPosition(20, 20);
-            Console.WriteLine("Hello GFG!");
-            Console.Write("Press any key to continue . . . ");
-
-            Console.ReadKey(true);
-        }
-
-        public static void ResizeStringArrayToArrayWithoutNulls(string[] oldArrays)
-        {
-            int nonNullInString = 0;
-            foreach (var oldArray in oldArrays)
-            {
-                if (oldArray != null)
-                    nonNullInString++;
-            }
-
-            string[] newArrays = new string[nonNullInString];
-            nonNullInString = 0;
-            foreach (var oldArray in oldArrays)
-            {
-                if (oldArray != null)
-                {
-                    newArrays[nonNullInString++] = oldArray;
-                }
-            }
-
-            Array.Resize(ref oldArrays, nonNullInString);
-            oldArrays = newArrays;
-        }
-
     }
 }
