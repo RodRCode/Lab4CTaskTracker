@@ -24,6 +24,11 @@ namespace Lab4CTaskTracker
 {
     class Program
     {
+        public class MaxPage
+        {
+            public static int maxPage = 1;  //set up variable to make sure we don't exceed the maximum possible total of possible pages
+            public static int maxPageAdjust = 0;
+        }
         public class Menu  //basic menu logic gotten from https://codereview.stackexchange.com/questions/198153/navigation-with-arrow-keys and then modified for my task
         {
             public static int currentSelection = 0;
@@ -78,6 +83,8 @@ namespace Lab4CTaskTracker
                 Console.WriteLine("Selection Status:");
                 ClearCurrentConsoleLine();
                 Console.WriteLine($"{menu.SelectedIndex + 1 + (15 * currentPage)}: " + (menu.SelectedOption ?? "(nothing)"));
+                int tempMaxPage = MaxPage.maxPage + MaxPage.maxPageAdjust;
+                Console.WriteLine($"\n     You are on Page {currentPage + 1} of {tempMaxPage + 1}");
             }
         }
         public static void Main(string[] args) //Main menu, I didn't break this out further, but I probably should have
@@ -112,11 +119,11 @@ namespace Lab4CTaskTracker
                     taskStatus[0] = "ToDo";
                 }
 
-                int maxPage = taskList.Count() / 15;  //set up variable to make sure we don't exceed the maximum possible total of possible pages
-                int maxPageAdjust = 0;  //initialize and set correction variable for edge case to report the proper number of pages when the number of pages is divisible by 15.  Damn you off by one errors!
+                MaxPage.maxPage = taskList.Count() / 15;  //set up variable to make sure we don't exceed the maximum possible total of possible pages
+                MaxPage.maxPageAdjust = 0;  //initialize and set correction variable for edge case to report the proper number of pages when the number of pages is divisible by 15.  Damn you off by one errors!
                 if ((taskList.Count() % 15) == 0)
                 {
-                    maxPageAdjust--;
+                    MaxPage.maxPageAdjust--;
                 }
 
 
@@ -139,7 +146,7 @@ namespace Lab4CTaskTracker
                 }
 
                 var menu = new Menu(pageTaskList);  //sends the page list to be displayed
-                selectionChoice = CallMenu(menu, ref pageTaskStatus, ref currentPage, ref maxPage, ref maxPageAdjust);
+                selectionChoice = CallMenu(menu, ref pageTaskStatus, ref currentPage);
                 switch (selectionChoice) //what do we do based on the user's input?
                 {
                     case "Add":
@@ -170,7 +177,7 @@ namespace Lab4CTaskTracker
                         break;
 
                     case "PageUp":
-                        if (((taskList.Count() % 15) == 0) && (currentPage == (maxPage - 1)))
+                        if (((taskList.Count() % 15) == 0) && (currentPage == (MaxPage.maxPage - 1)))
                         { }
                         else
                         {
@@ -206,7 +213,7 @@ namespace Lab4CTaskTracker
                 }
             } while (finished == false);
         }
-        public static string CallMenu(Menu menu, ref List<string> pageTaskStatus, ref int currentPage, ref int maxPage, ref int maxPageAdjust)
+        public static string CallMenu(Menu menu, ref List<string> pageTaskStatus, ref int currentPage)
         //this does the work of setting up the menu display and instructions to the user
         {
             Console.Clear();
@@ -233,7 +240,7 @@ namespace Lab4CTaskTracker
                         menu.MoveDown();
                         break;
                     case ConsoleKey.RightArrow:
-                        if (currentPage < maxPage)
+                        if (currentPage < MaxPage.maxPage)
                         {
                             selectionChoice = "PageUp";
                             done = true;
@@ -267,9 +274,6 @@ namespace Lab4CTaskTracker
                         done = true;
                         break;
                 }
-
-                 int tempMaxPage = maxPage + maxPageAdjust;
-                Console.WriteLine($"\n     You are on Page {currentPage + 1} of {tempMaxPage + 1}");
             }
             while (!done);
             return selectionChoice;
