@@ -57,7 +57,7 @@ namespace Lab4CTaskTracker
                 this.menu = menu;
             }
 
-            public void Paint(int x, int y, ref List<string> taskStatus)
+            public void Paint(int x, int y, ref List<string> pageTaskStatus, ref int currentPage)
             {
                 for (int i = 0; i < menu.Items.Count; i++)
                 {
@@ -70,7 +70,7 @@ namespace Lab4CTaskTracker
                     else
                     {
                         ToDoTextColor();
-                        switch (taskStatus[i])
+                        switch (pageTaskStatus[i])
                         {
                             case "Incomplete":
                                 IncompleteTextColor();
@@ -81,7 +81,7 @@ namespace Lab4CTaskTracker
                         }
                     }
 
-                    Console.Write($"{i + 1}. ");
+                    Console.Write($"{i + 1 + currentPage * 15}. ");
                     Console.WriteLine(menu.Items[i]);
                 }
             }
@@ -90,8 +90,14 @@ namespace Lab4CTaskTracker
 
         public static void Main(string[] args)
         {
+            //   int test = 59 % 15;
+            //   int test2 = 59 / 15;
+            //   Console.WriteLine($"59 % 15 = {test}");
+            //   Console.WriteLine($"59 / 15 = {test2}");
             //               ConsoleColorTextTest();
-            //               Console.ReadLine();
+            //                  Console.ReadLine();
+
+
             bool finished = false;
 
             List<string> taskList = new List<string>();
@@ -117,6 +123,8 @@ namespace Lab4CTaskTracker
                taskStatus.Add("ToDo");
             */
 
+            int currentPage = 0;
+
             do
             {
                 if (taskList[0] == "")
@@ -127,8 +135,47 @@ namespace Lab4CTaskTracker
                     taskStatus[0] = "ToDo";
                 }
 
-                var menu = new Menu(taskList);
-                selectionChoice = CallMenu(menu, ref taskStatus);
+                int maxPage = taskList.Count() / 15;
+
+                List<string> pageTaskList = new List<string>();
+                List<string> pageTaskStatus = new List<string>();
+
+                foreach (var item in taskList.Skip(15 * currentPage).Take(15))
+                {
+                    pageTaskList.Add(item);
+                }
+
+                foreach (var item in taskStatus.Skip(15 * currentPage).Take(15))
+                {
+                    pageTaskStatus.Add(item);
+                }
+
+                /*
+                if (maxPage > 0)
+                {
+                    for (int i = 0; i < 15; i++)
+                    {
+                        if (taskStatus[i + (currentPage * 15)] != null)
+                        {
+                            pageTaskStatus.Add(taskStatus[i + (currentPage * 15)]);
+                            pageTaskList.Add(taskList[i + (currentPage * 15)]);
+                        }
+                    }
+                }
+                else
+                {
+                    pageTaskList = taskList;
+                    pageTaskStatus = taskStatus;
+                }
+                */
+
+                //        foreach (var item in pageTaskList)
+                //        {
+                //            Console.WriteLine(item);
+                //        }
+
+                var menu = new Menu(pageTaskList);
+                selectionChoice = CallMenu(menu, ref pageTaskStatus, ref currentPage, ref maxPage);
                 switch (selectionChoice)
                 {
                     case "Add":
@@ -150,15 +197,25 @@ namespace Lab4CTaskTracker
                         }
                         break;
                     case "Completed":
-                        taskStatus[menu.SelectedIndex] = "Completed";
+                        taskStatus[menu.SelectedIndex + (15 * currentPage)] = "Completed";
                         break;
                     case "Incomplete":
-                        taskList.Add(taskList[menu.SelectedIndex]);
+                        taskList.Add(taskList[menu.SelectedIndex + (15 * currentPage)]);
                         taskStatus.Add("Incomplete");
-                        taskList.RemoveAt(menu.SelectedIndex);
-                        taskStatus.RemoveAt(menu.SelectedIndex);
+                        taskList.RemoveAt(menu.SelectedIndex + (15 * currentPage));
+                        taskStatus.RemoveAt(menu.SelectedIndex + (15 * currentPage));
                         break;
-
+                    case "PageDown":
+                        currentPage--;
+                        break;
+                    case "PageUp":
+                        if (((taskList.Count() % 15) == 0) && (currentPage == (maxPage - 1)))
+                        { }
+                        else
+                        {
+                            currentPage++;
+                        }
+                        break;
                     case "Quit":
                         WriteToFile(taskList, "taskList.txt");
                         WriteToFile(taskStatus, "taskStatus.txt");
@@ -187,7 +244,7 @@ namespace Lab4CTaskTracker
             } while (finished == false);
         }
 
-        public static string CallMenu(Menu menu, ref List<string> taskStatus)
+        public static string CallMenu(Menu menu, ref List<string> pageTaskStatus, ref int currentPage, ref int maxPage)
         {
             Console.Clear();
             var menuPainter = new ConsoleMenuPainter(menu);
@@ -200,7 +257,7 @@ namespace Lab4CTaskTracker
 
             do
             {
-                menuPainter.Paint(5, 5, ref taskStatus);
+                menuPainter.Paint(5, 5, ref pageTaskStatus, ref currentPage);
 
                 var keyInfo = Console.ReadKey();
 
@@ -212,12 +269,20 @@ namespace Lab4CTaskTracker
                     case ConsoleKey.DownArrow:
                         menu.MoveDown();
                         break;
-                    //TODO         case ConsoleKey.RightArrow:
-                    //             menu.PageRight();
-                    //             break;
-                    //TODO         case ConsoleKey.LeftArrow:
-                    //             menu.PageLeft();
-                    //             break;
+                    case ConsoleKey.RightArrow:
+                        if (currentPage < maxPage)
+                        {
+                            selectionChoice = "PageUp";
+                            done = true;
+                        }
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        if (currentPage > 0)
+                        {
+                            selectionChoice = "PageDown";
+                            done = true;
+                        }
+                        break;
                     case ConsoleKey.A:
                         selectionChoice = "Add";
                         done = true;
@@ -247,7 +312,11 @@ namespace Lab4CTaskTracker
                 ClearCurrentConsoleLine();
                 Console.WriteLine("Selection Status:");
                 ClearCurrentConsoleLine();
-                Console.WriteLine($"{ taskStatus[menu.SelectedIndex]}: " + (menu.SelectedOption ?? "(nothing)"));
+                Console.WriteLine($"{menu.SelectedIndex + 1 + (15 * currentPage)}: " + (menu.SelectedOption ?? "(nothing)"));
+                int tempMaxPage = maxPage;
+                
+
+                Console.WriteLine($"You are on Page {currentPage + 1} of {tempMaxPage + 1}");
             }
             while (!done);
             return selectionChoice;
