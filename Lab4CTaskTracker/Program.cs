@@ -201,10 +201,10 @@ namespace Lab4CTaskTracker
             string selectionChoice = "";
             bool done = false;
 
-            Console.WriteLine("Enter 'a' to add a task, 'c' to mark it complete");
-            Console.WriteLine("'i' marks it incomplete, 'q' or 'Enter' exits");
-            Console.WriteLine("You can use the up and down arrow keys to move through your list");
-            Console.WriteLine("You can use the left and right arrow keys to move between pages");
+            Console.WriteLine("'a' to add a task       | 'c' to mark it complete");
+            Console.WriteLine("'i' marks it incomplete | 'q' or 'Enter' exits");
+            Console.WriteLine(" Up and Down arrow keys move through the list");
+            Console.WriteLine(" Left and Right arrow keys to move between pages");
 
             do
             {
