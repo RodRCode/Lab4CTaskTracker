@@ -81,8 +81,7 @@ namespace Lab4CTaskTracker
             string selectionChoice = "";
             finished = false;
 
-            ReadFromFile(ref taskList, "taskList.txt");  //pulls data from the drive if it is there
-            ReadFromFile(ref taskStatus, "taskStatus.txt");
+            ReadFromFile(ref taskList, ref taskStatus, "taskTracker.txt");  //pulls data from the drive if it is there
 
             if (taskList.Count == 0) //case for when this is a new list
             {
@@ -108,7 +107,7 @@ namespace Lab4CTaskTracker
                 {
                     maxPageAdjust--;
                 }
-                
+
 
                 List<string> pageTaskList = new List<string>();  //lists for the pages in case there are more than 15 tasks
                 List<string> pageTaskStatus = new List<string>();
@@ -164,8 +163,8 @@ namespace Lab4CTaskTracker
                         break;
 
                     case "Quit":
-                        WriteToFile(taskList, "taskList.txt");
-                        WriteToFile(taskStatus, "taskStatus.txt");
+                        WriteToFile(taskList, taskStatus, "taskTracker.txt");
+                        //                 WriteToFile(taskStatus, "taskStatus.txt");
                         Console.WriteLine("That's all folks!\nYou may now close the window.");
                         finished = true;
                         break;
@@ -191,7 +190,7 @@ namespace Lab4CTaskTracker
             } while (finished == false);
         }
         public static string CallMenu(Menu menu, ref List<string> pageTaskStatus, ref int currentPage, ref int maxPage, ref int maxPageAdjust)
-            //this does the work of setting up the menu display and instructions to the user
+        //this does the work of setting up the menu display and instructions to the user
         {
             Console.Clear();
             var menuPainter = new ConsoleMenuPainter(menu);
@@ -260,7 +259,7 @@ namespace Lab4CTaskTracker
                 Console.WriteLine("Selection Status:");
                 ClearCurrentConsoleLine();
                 Console.WriteLine($"{menu.SelectedIndex + 1 + (15 * currentPage)}: " + (menu.SelectedOption ?? "(nothing)"));
-                int tempMaxPage = maxPage +  maxPageAdjust;
+                int tempMaxPage = maxPage + maxPageAdjust;
                 Console.WriteLine($"\n     You are on Page {currentPage + 1} of {tempMaxPage + 1}");
             }
             while (!done);
@@ -322,16 +321,19 @@ namespace Lab4CTaskTracker
         {
             TextColor(8);
         }
-        private static void WriteToFile(List<string> listToWriteToFile, string fileName) //writes data to a file on the disk
+        private static void WriteToFile(List<string> listToWriteToFile1, List<string> listToWriteToFile2, string fileName) //writes data to a file on the disk
         {
             try
             {
                 //Pass the filepath and filename to the StreamWriter Constructor
                 StreamWriter sw = new StreamWriter(fileName);
                 //Write a line of text
-                foreach (var item in listToWriteToFile)
+                int i = 0;
+                foreach (var item in listToWriteToFile1)
                 {
                     sw.WriteLine(item);
+                    sw.WriteLine(listToWriteToFile2[i]);
+                    i++;
                 }
                 //Close the file
                 sw.Close();
@@ -346,17 +348,22 @@ namespace Lab4CTaskTracker
                 Console.WriteLine("Hitting the writing finally block");
             }
         }
-        private static void ReadFromFile(ref List<string> listToReadFromFile, string fileName) //reads the data from a file on the disk
+        private static void ReadFromFile(ref List<string> listToReadFromFile1, ref List<string> listToReadFromFile2, string fileName) //reads the data from a file on the disk
         {
-            string inputString = "";
+            string inputString1 = "";
+            string inputString2 = "";
             try
             {
+                int i = 0;
                 using (StreamReader sr = new StreamReader(fileName))
                 {
                     while (sr.Peek() >= 0)
                     {
-                        inputString = sr.ReadLine();
-                        listToReadFromFile.Add(inputString);
+                        inputString1 = sr.ReadLine();
+                        inputString2 = sr.ReadLine();
+                        listToReadFromFile1.Add(inputString1);
+                        listToReadFromFile2.Add(inputString2);
+                        i++;
                     }
                 }
             }
