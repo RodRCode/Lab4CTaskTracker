@@ -26,15 +26,16 @@ namespace Lab4CTaskTracker
     {
         public class Menu  //basic menu logic gotten from https://codereview.stackexchange.com/questions/198153/navigation-with-arrow-keys and then modified for my task
         {
+            public static int currentSelection = 0;
             public Menu(IEnumerable<string> items)
             {
                 Items = items.ToArray();
             }
             public IReadOnlyList<string> Items { get; }
-            public int SelectedIndex { get; private set; } = 0; // nothing selected
+            public int SelectedIndex { get; private set; } = Menu.currentSelection; // nothing selected
             public string SelectedOption => SelectedIndex != -1 ? Items[SelectedIndex] : null;
-            public void MoveUp() => SelectedIndex = Math.Max(SelectedIndex - 1, 0);
-            public void MoveDown() => SelectedIndex = Math.Min(SelectedIndex + 1, Items.Count - 1);
+            public void MoveUp() => Menu.currentSelection = SelectedIndex = Math.Max(SelectedIndex - 1, 0);
+            public void MoveDown() => Menu.currentSelection = SelectedIndex = Math.Min(SelectedIndex + 1, Items.Count - 1);
         }
         public class ConsoleMenuPainter //drawing menu list
         {
@@ -84,7 +85,7 @@ namespace Lab4CTaskTracker
             finished = false;
 
             ReadFromFile(ref taskList, ref taskStatus, "taskTracker.txt", ref completedTasks, "completedTasks.txt");  //pulls data from the drive if it is there
-                                                                            //       ReadFromFile(ref taskStatus, "taskStatus.txt");
+                                                                                                                      //       ReadFromFile(ref taskStatus, "taskStatus.txt");
 
             if (taskList.Count == 0) //case for when this is a new list
             {
@@ -118,6 +119,11 @@ namespace Lab4CTaskTracker
                 foreach (var item in taskList.Skip(15 * currentPage).Take(15)) //only pull the part of the larger list that we need
                 {
                     pageTaskList.Add(item);
+                }
+
+                if (Menu.currentSelection >= pageTaskList.Count()) //resets selection on final page if the counter is greater than the nubmer of items on that page
+                {
+                    Menu.currentSelection = 0;
                 }
 
                 foreach (var item in taskStatus.Skip(15 * currentPage).Take(15)) //same, but for the status list
