@@ -136,6 +136,12 @@ namespace Lab4CTaskTracker
                 }
 
                 int maxPage = taskList.Count() / 15;
+                int maxPageAdjust = 0;
+                if ((taskList.Count() % 15) == 0)
+                {
+                    maxPageAdjust--;
+                }
+                
 
                 List<string> pageTaskList = new List<string>();
                 List<string> pageTaskStatus = new List<string>();
@@ -175,7 +181,7 @@ namespace Lab4CTaskTracker
                 //        }
 
                 var menu = new Menu(pageTaskList);
-                selectionChoice = CallMenu(menu, ref pageTaskStatus, ref currentPage, ref maxPage);
+                selectionChoice = CallMenu(menu, ref pageTaskStatus, ref currentPage, ref maxPage, ref maxPageAdjust);
                 switch (selectionChoice)
                 {
                     case "Add":
@@ -244,7 +250,7 @@ namespace Lab4CTaskTracker
             } while (finished == false);
         }
 
-        public static string CallMenu(Menu menu, ref List<string> pageTaskStatus, ref int currentPage, ref int maxPage)
+        public static string CallMenu(Menu menu, ref List<string> pageTaskStatus, ref int currentPage, ref int maxPage, ref int maxPageAdjust)
         {
             Console.Clear();
             var menuPainter = new ConsoleMenuPainter(menu);
@@ -313,8 +319,7 @@ namespace Lab4CTaskTracker
                 Console.WriteLine("Selection Status:");
                 ClearCurrentConsoleLine();
                 Console.WriteLine($"{menu.SelectedIndex + 1 + (15 * currentPage)}: " + (menu.SelectedOption ?? "(nothing)"));
-                int tempMaxPage = maxPage;
-                
+                int tempMaxPage = maxPage +  maxPageAdjust;
 
                 Console.WriteLine($"You are on Page {currentPage + 1} of {tempMaxPage + 1}");
             }
