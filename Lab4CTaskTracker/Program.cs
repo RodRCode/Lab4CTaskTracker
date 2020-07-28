@@ -71,6 +71,13 @@ namespace Lab4CTaskTracker
                     Console.Write($"{i + 1 + currentPage * 15}. ");
                     Console.WriteLine(menu.Items[i]);
                 }
+                TextColor();
+                ClearCurrentConsoleLine();
+                Console.WriteLine();
+                ClearCurrentConsoleLine();
+                Console.WriteLine("Selection Status:");
+                ClearCurrentConsoleLine();
+                Console.WriteLine($"{menu.SelectedIndex + 1 + (15 * currentPage)}: " + (menu.SelectedOption ?? "(nothing)"));
             }
         }
         public static void Main(string[] args) //Main menu, I didn't break this out further, but I probably should have
@@ -261,16 +268,7 @@ namespace Lab4CTaskTracker
                         break;
                 }
 
-                //text at the bottom of the display, shows what item is selected, what its
-                //status is, and what page you are on out of x number of possible 15 item pages
-                TextColor();
-                ClearCurrentConsoleLine();
-                Console.WriteLine();
-                ClearCurrentConsoleLine();
-                Console.WriteLine("Selection Status:");
-                ClearCurrentConsoleLine();
-                Console.WriteLine($"{menu.SelectedIndex + 1 + (15 * currentPage)}: " + (menu.SelectedOption ?? "(nothing)"));
-                int tempMaxPage = maxPage + maxPageAdjust;
+                 int tempMaxPage = maxPage + maxPageAdjust;
                 Console.WriteLine($"\n     You are on Page {currentPage + 1} of {tempMaxPage + 1}");
             }
             while (!done);
