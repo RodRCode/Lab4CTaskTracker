@@ -77,12 +77,14 @@ namespace Lab4CTaskTracker
                     Console.WriteLine(menu.Items[i]);
                 }
                 TextColor();
-                ClearCurrentConsoleLine();
+ //               ClearCurrentConsoleLine();
                 Console.WriteLine();
                 ClearCurrentConsoleLine();
-                Console.WriteLine("Selection Status:");
-                ClearCurrentConsoleLine();
+                Console.WriteLine($"Status: {pageTaskStatus[menu.SelectedIndex]}");
+ //               ClearCurrentConsoleLine();
+ /*
                 Console.WriteLine($"{menu.SelectedIndex + 1 + (15 * currentPage)}: " + (menu.SelectedOption ?? "(nothing)"));
+   */
                 int tempMaxPage = MaxPage.maxPage + MaxPage.maxPageAdjust;
                 Console.WriteLine($"\n     You are on Page {currentPage + 1} of {tempMaxPage + 1}");
             }
@@ -151,7 +153,7 @@ namespace Lab4CTaskTracker
                 {
                     case "Add":
                         TextColor();
-                        Console.WriteLine();
+                        //Console.WriteLine();
                         Console.Write("     Enter something to do: ");
                         ToDoTextColor();
                         string input = "";
@@ -230,7 +232,7 @@ namespace Lab4CTaskTracker
             {
                 menuPainter.Paint(5, 5, ref pageTaskStatus, ref currentPage);
 
-                var keyInfo = Console.ReadKey();  //read inputs and sends back the response
+                var keyInfo = Console.ReadKey(true);  //read inputs and sends back the response
                 switch (keyInfo.Key)
                 {
                     case ConsoleKey.UpArrow:
